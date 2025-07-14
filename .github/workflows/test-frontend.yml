@@ -1,0 +1,50 @@
+name: Frontend Tests
+
+on:
+  pull_request:
+    paths:
+      - 'front/**'
+      - '.github/workflows/test-frontend.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'front/**'
+      - '.github/workflows/test-frontend.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Install dependencies
+        working-directory: ./front
+        run: npm ci
+        
+      - name: Run linter
+        working-directory: ./front
+        run: npm run lint
+        
+      - name: Run tests
+        working-directory: ./front
+        run: npm test -- --run
+        
+      - name: Build application
+        working-directory: ./front
+        run: npm run build
