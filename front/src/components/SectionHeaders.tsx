@@ -1,4 +1,5 @@
 import type React from "react";
+import { useState, useMemo } from "react";
 import {
 	formatFlags,
 	getSectionTypeString,
@@ -10,9 +11,49 @@ interface SectionHeadersProps {
 }
 
 export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
+	const [sortByAddress, setSortByAddress] = useState(false);
+	const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
+
+	const processedSections = useMemo(() => {
+		let filtered = sections;
+		
+		// Apply flag filtering
+		if (showFlaggedOnly) {
+			filtered = filtered.filter(section => section.Flags > 0);
+		}
+		
+		// Apply address sorting
+		if (sortByAddress) {
+			filtered = [...filtered].sort((a, b) => a.Addr - b.Addr);
+		}
+		
+		return filtered;
+	}, [sections, sortByAddress, showFlaggedOnly]);
+
 	return (
 		<div className="section-headers">
 			<h2>Section Headers</h2>
+			
+			{/* Controls */}
+			<div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+				<label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+					<input
+						type="checkbox"
+						checked={sortByAddress}
+						onChange={(e) => setSortByAddress(e.target.checked)}
+					/>
+					Sort by Address
+				</label>
+				<label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+					<input
+						type="checkbox"
+						checked={showFlaggedOnly}
+						onChange={(e) => setShowFlaggedOnly(e.target.checked)}
+					/>
+					Show only sections with flags
+				</label>
+			</div>
+			
 			<div className="table-container">
 				<table>
 					<thead>
@@ -31,9 +72,9 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 						</tr>
 					</thead>
 					<tbody>
-						{sections.map((section, index) => (
-							<tr key={`section-${index}`}>
-								<td>[{index}]</td>
+						{processedSections.map((section, index) => (
+							<tr key={`section-${section.Name || section.Addr}-${index}`}>
+								<td>[{sections.indexOf(section)}]</td>
 								<td>{section.Name || "<no-name>"}</td>
 								<td>{getSectionTypeString(section.Type)}</td>
 								<td className="mono">
@@ -57,9 +98,16 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 					</tbody>
 				</table>
 			</div>
+			
+			{/* Results info */}
 			<div style={{ marginTop: "1rem", fontSize: "0.875rem", color: "#666" }}>
-				<strong>Key to Flags:</strong>
-				<br />W (write), A (alloc), X (execute)
+				<div>
+					Showing {processedSections.length} of {sections.length} sections
+				</div>
+				<div style={{ marginTop: "0.5rem" }}>
+					<strong>Key to Flags:</strong>
+					<br />W (write), A (alloc), X (execute)
+				</div>
 			</div>
 		</div>
 	);
