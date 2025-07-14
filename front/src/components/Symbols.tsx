@@ -82,11 +82,16 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
 	const filteredAndSortedSymbols = useMemo(() => {
-		let filtered = symbols;
+		// Create array with original indices for efficient sorting
+		const withIndices = symbols.map((symbol, index) => ({
+			symbol,
+			originalIndex: index
+		}));
 		
 		// Filter out NOTYPE symbols if checkbox is checked
+		let filtered = withIndices;
 		if (hideNotype) {
-			filtered = symbols.filter(symbol => getSymbolType(symbol.Info) !== "NOTYPE");
+			filtered = withIndices.filter(item => getSymbolType(item.symbol.Info) !== "NOTYPE");
 		}
 		
 		// Sort symbols
@@ -95,13 +100,13 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 			
 			switch (sortBy) {
 				case "num":
-					compareValue = symbols.indexOf(a) - symbols.indexOf(b);
+					compareValue = a.originalIndex - b.originalIndex;
 					break;
 				case "name":
-					compareValue = (a.Name || "").localeCompare(b.Name || "");
+					compareValue = (a.symbol.Name || "").localeCompare(b.symbol.Name || "");
 					break;
 				case "size":
-					compareValue = a.Size - b.Size;
+					compareValue = a.symbol.Size - b.symbol.Size;
 					break;
 			}
 			
@@ -200,18 +205,18 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 						</tr>
 					</thead>
 					<tbody>
-						{filteredAndSortedSymbols.map((symbol, index) => (
-							<tr key={`symbol-${symbols.indexOf(symbol)}`}>
-								<td>{symbols.indexOf(symbol)}:</td>
+						{filteredAndSortedSymbols.map((item, index) => (
+							<tr key={`symbol-${item.originalIndex}`}>
+								<td>{item.originalIndex}:</td>
 								<td className="mono">
-									0x{symbol.Value.toString(16).padStart(16, "0")}
+									0x{item.symbol.Value.toString(16).padStart(16, "0")}
 								</td>
-								<td>{symbol.Size}</td>
-								<td>{getSymbolType(symbol.Info)}</td>
-								<td>{symbol.Name || "<no-name>"}</td>
-								<td>{getSectionIndex(symbol.Shndx, sectionHeaders)}</td>
-								<td>{getSymbolVisibility(symbol.Other)}</td>
-								<td>{getSymbolBind(symbol.Info)}</td>
+								<td>{item.symbol.Size}</td>
+								<td>{getSymbolType(item.symbol.Info)}</td>
+								<td>{item.symbol.Name || "<no-name>"}</td>
+								<td>{getSectionIndex(item.symbol.Shndx, sectionHeaders)}</td>
+								<td>{getSymbolVisibility(item.symbol.Other)}</td>
+								<td>{getSymbolBind(item.symbol.Info)}</td>
 							</tr>
 						))}
 					</tbody>
