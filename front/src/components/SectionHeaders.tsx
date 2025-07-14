@@ -15,7 +15,11 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 	const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
 
 	const processedSections = useMemo(() => {
-		let filtered = sections;
+		// First map sections to include their original indices
+		let filtered = sections.map((section, originalIndex) => ({
+			...section,
+			originalIndex
+		}));
 
 		// Apply flag filtering
 		if (showFlaggedOnly) {
