@@ -87,17 +87,17 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 			symbol,
 			originalIndex: index
 		}));
-		
+
 		// Filter out NOTYPE symbols if checkbox is checked
 		let filtered = withIndices;
 		if (hideNotype) {
 			filtered = withIndices.filter(item => getSymbolType(item.symbol.Info) !== "NOTYPE");
 		}
-		
+
 		// Sort symbols
 		const sorted = [...filtered].sort((a, b) => {
 			let compareValue = 0;
-			
+
 			switch (sortBy) {
 				case "num":
 					compareValue = a.originalIndex - b.originalIndex;
@@ -109,10 +109,10 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 					compareValue = a.symbol.Size - b.symbol.Size;
 					break;
 			}
-			
+
 			return sortOrder === "asc" ? compareValue : -compareValue;
 		});
-		
+
 		return sorted;
 	}, [symbols, hideNotype, sortBy, sortOrder]);
 
@@ -137,7 +137,7 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 	return (
 		<div className="symbols">
 			<h2>Symbols</h2>
-			
+
 			<div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "center" }}>
 				<label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
 					<input
@@ -147,7 +147,7 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 					/>
 					Hide NOTYPE symbols
 				</label>
-				
+
 				<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
 					<span>Sort by:</span>
 					<select
@@ -161,9 +161,9 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 					<button
 						type="button"
 						onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-						style={{ 
-							background: "none", 
-							border: "1px solid var(--border-color)", 
+						style={{
+							background: "none",
+							border: "1px solid var(--border-color)",
 							borderRadius: "4px",
 							padding: "0.25rem 0.5rem",
 							cursor: "pointer",
@@ -179,21 +179,21 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 				<table>
 					<thead>
 						<tr>
-							<th 
+							<th
 								style={{ cursor: "pointer" }}
 								onClick={() => handleSortChange("num")}
 							>
 								Num {sortBy === "num" && (sortOrder === "asc" ? "↑" : "↓")}
 							</th>
 							<th>Value</th>
-							<th 
+							<th
 								style={{ cursor: "pointer" }}
 								onClick={() => handleSortChange("size")}
 							>
 								Size {sortBy === "size" && (sortOrder === "asc" ? "↑" : "↓")}
 							</th>
 							<th>Type</th>
-							<th 
+							<th
 								style={{ cursor: "pointer" }}
 								onClick={() => handleSortChange("name")}
 							>
@@ -205,7 +205,7 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols, sectionHeaders }) => 
 						</tr>
 					</thead>
 					<tbody>
-						{filteredAndSortedSymbols.map((item, index) => (
+						{filteredAndSortedSymbols.map((item, _index) => (
 							<tr key={`symbol-${item.originalIndex}`}>
 								<td>{item.originalIndex}:</td>
 								<td className="mono">
