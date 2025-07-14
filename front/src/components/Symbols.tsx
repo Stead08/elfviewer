@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState, useMemo } from "react";
-import type { Symbol as ELFSymbol, SectionHeader } from "../utils/wasm";
+import type { ELFSymbol, SectionHeader } from "../utils/wasm";
 
 interface SymbolsProps {
 	symbols: ELFSymbol[];
