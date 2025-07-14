@@ -15,7 +15,11 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 	const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
 
 	const processedSections = useMemo(() => {
-		let filtered = sections;
+		// First map sections to include their original indices
+		let filtered = sections.map((section, originalIndex) => ({
+			...section,
+			originalIndex
+		}));
 		
 		// Apply flag filtering
 		if (showFlaggedOnly) {
@@ -74,7 +78,7 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 					<tbody>
 						{processedSections.map((section, index) => (
 							<tr key={`section-${section.Name || section.Addr}-${index}`}>
-								<td>[{sections.indexOf(section)}]</td>
+								<td>[{section.originalIndex}]</td>
 								<td>{section.Name || "<no-name>"}</td>
 								<td>{getSectionTypeString(section.Type)}</td>
 								<td className="mono">
