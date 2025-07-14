@@ -15,29 +15,25 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 	const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
 
 	const processedSections = useMemo(() => {
-		// First map sections to include their original indices
-		let filtered = sections.map((section, originalIndex) => ({
-			...section,
-			originalIndex
-		}));
-		
+		let filtered = sections;
+
 		// Apply flag filtering
 		if (showFlaggedOnly) {
-			filtered = filtered.filter(section => section.Flags > 0);
+			filtered = filtered.filter(section => formatFlags(section.Flags).trim() !== "");
 		}
-		
+
 		// Apply address sorting
 		if (sortByAddress) {
 			filtered = [...filtered].sort((a, b) => a.Addr - b.Addr);
 		}
-		
+
 		return filtered;
 	}, [sections, sortByAddress, showFlaggedOnly]);
 
 	return (
 		<div className="section-headers">
 			<h2>Section Headers</h2>
-			
+
 			{/* Controls */}
 			<div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
 				<label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -57,7 +53,7 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 					Show only sections with flags
 				</label>
 			</div>
-			
+
 			<div className="table-container">
 				<table>
 					<thead>
@@ -102,7 +98,7 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 					</tbody>
 				</table>
 			</div>
-			
+
 			{/* Results info */}
 			<div style={{ marginTop: "1rem", fontSize: "0.875rem", color: "#666" }}>
 				<div>
