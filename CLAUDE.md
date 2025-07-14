@@ -5,27 +5,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 **Build the application:**
+
 ```bash
 go build
 ```
 
 **Run with a sample ELF file:**
+
 ```bash
 ./elfviewer <elf-file>
 # Example: ./elfviewer /bin/ls
 ```
 
 **Run directly without building:**
+
 ```bash
 go run main.go <elf-file>
 ```
 
 **Format code:**
+
 ```bash
 go fmt ./...
 ```
 
 **Run static analysis:**
+
 ```bash
 go vet ./...
 ```
@@ -39,11 +44,13 @@ The ELFViewer is a command-line tool for analyzing ELF (Executable and Linkable 
 **`main.go`**: Entry point that delegates to the cmd package.
 
 **`cmd/` package**: Contains command-line interface logic using Go's standard `flag` package. The `root.go` file:
+
 - Defines all command-line flags (-h, -S, -l, -s, -d, -a, -x)
 - Orchestrates the parsing and display flow
 - Calls appropriate display methods based on flags
 
 **`elf/` package**: Core ELF parsing and display functionality:
+
 - `types.go`: Defines ELF constants, structures, and type definitions (headers, sections, segments, symbols)
 - `parser.go`: Contains the parsing logic for reading and interpreting ELF binary data
   - `Open()`: Opens and reads an ELF file from disk
@@ -65,3 +72,11 @@ The ELFViewer is a command-line tool for analyzing ELF (Executable and Linkable 
 4. **Error Propagation**: Uses Go's error wrapping for better error context
 
 The tool reads the entire ELF file into memory, parses its structure based on the ELF specification, and provides various display options for different ELF components.
+
+## イシュー
+
+イシューの要望は原則/frontでフロントアプリで実装して。
+
+## lint
+
+frontアプリのlintはpackage.jsonに定義されているlintコマンドを利用して
