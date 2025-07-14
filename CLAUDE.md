@@ -4,79 +4,155 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-**Build the application:**
+### Go Backend (CLI Tool)
 
+**Build the CLI application:**
 ```bash
 go build
 ```
 
-**Run with a sample ELF file:**
+**Build for WebAssembly:**
+```bash
+GOOS=js GOARCH=wasm go build -o front/public/elfviewer.wasm
+```
 
+**Run with a sample ELF file:**
 ```bash
 ./elfviewer <elf-file>
 # Example: ./elfviewer /bin/ls
 ```
 
 **Run directly without building:**
-
 ```bash
 go run main.go <elf-file>
 ```
 
 **Format code:**
-
 ```bash
 go fmt ./...
 ```
 
 **Run static analysis:**
-
 ```bash
 go vet ./...
 ```
 
+### Frontend (React Application)
+
+**Install dependencies:**
+```bash
+cd front
+pnpm install
+```
+
+**Development server:**
+```bash
+pnpm dev
+```
+
+**Build for production:**
+```bash
+pnpm build
+```
+
+**Run linter (Biome):**
+```bash
+pnpm run lint
+```
+
+**Run tests:**
+```bash
+pnpm test          # Watch mode
+pnpm test -- --run # Run once
+```
+
+**Run tests with UI:**
+```bash
+pnpm test:ui
+```
+
 ## Architecture
 
-The ELFViewer is a command-line tool for analyzing ELF (Executable and Linkable Format) files. The codebase follows a clean package structure:
+The ELFViewer is a dual-mode application that can run as both a command-line tool and a web application through WebAssembly.
 
-### Core Packages
+### Go Backend Structure
 
-**`main.go`**: Entry point that delegates to the cmd package.
+**`main.go`**: Entry point with build tags:
+- Default build (`!wasm`): CLI version that delegates to cmd package
+- WASM build: Excluded from compilation
 
-**`cmd/` package**: Contains command-line interface logic using Go's standard `flag` package. The `root.go` file:
+**`wasm_exports.go`**: WebAssembly exports (build tag: `wasm`):
+- `parseELF(buffer)`: Parses ELF file from ArrayBuffer and returns JSON
+- `getHexDump(buffer, sectionName)`: Returns hex dump of specific section
 
-- Defines all command-line flags (-h, -S, -l, -s, -d, -a, -x)
-- Orchestrates the parsing and display flow
-- Calls appropriate display methods based on flags
+**`cmd/` package**: Command-line interface logic:
+- `root.go`: Defines CLI flags (-h, -S, -l, -s, -d, -a, -x) and orchestrates display flow
+- Uses Go's standard `flag` package
 
 **`elf/` package**: Core ELF parsing and display functionality:
+- `types.go`: ELF constants, structures, and type definitions
+- `parser.go`: Parsing logic for 32-bit and 64-bit ELF formats
+  - `Open()`: Opens and reads ELF file from disk
+  - `Parse()`: Main parsing logic with endianness handling
+- `display.go`: Display methods for CLI output
+  - `DisplayHeader()`, `DisplaySectionHeaders()`, `DisplayProgramHeaders()`
+  - `DisplaySymbols()`, `DisplayDynamic()`, `DisplayHexDump()`
 
-- `types.go`: Defines ELF constants, structures, and type definitions (headers, sections, segments, symbols)
-- `parser.go`: Contains the parsing logic for reading and interpreting ELF binary data
-  - `Open()`: Opens and reads an ELF file from disk
-  - `Parse()`: Main parsing logic that handles both 32-bit and 64-bit ELF formats
-  - Separate parsing methods for headers, sections, and program segments
-- `display.go`: Implements display methods for outputting parsed ELF data
-  - `DisplayHeader()`: Shows basic ELF header information
-  - `DisplaySectionHeaders()`: Lists all sections
-  - `DisplayProgramHeaders()`: Shows loadable segments
-  - `DisplaySymbols()`: Displays symbol table entries
-  - `DisplayDynamic()`: Shows dynamic linking information
-  - `DisplayHexDump()`: Provides hex dump of specific sections
+### Frontend Structure (React + TypeScript)
+
+**Technology Stack:**
+- React 19.1.0 with TypeScript
+- Vite as build tool
+- Biome for linting (replacing ESLint)
+- Vitest for testing
+- pnpm as package manager
+
+**Key Components:**
+- `App.tsx`: Main component with tab navigation
+- `FileUpload.tsx`: Handles ELF file uploads
+- `ELFHeader.tsx`: Displays parsed ELF header
+- `SectionHeaders.tsx`: Section headers with sorting/filtering
+- `ProgramHeaders.tsx`: Program segments display
+- `Symbols.tsx`: Symbol table viewer
+- `HexDump.tsx`: Hex dump with section selector
+
+**WebAssembly Integration:**
+- `utils/wasm.ts`: Initializes WASM module and wraps exported functions
+- `public/wasm_exec.js`: Go's WebAssembly support runtime
+- `public/elfviewer.wasm`: Compiled WebAssembly module
 
 ### Key Design Patterns
 
-1. **Separation of Concerns**: Parsing logic is separated from display logic and CLI handling
-2. **Dual Architecture Support**: Code handles both 32-bit and 64-bit ELF files transparently
-3. **Endianness Handling**: Supports both little-endian and big-endian formats
-4. **Error Propagation**: Uses Go's error wrapping for better error context
+1. **Dual Build System**: Same Go code serves both CLI and web interfaces
+2. **Separation of Concerns**: Parsing logic separated from display logic
+3. **Type Safety**: TypeScript interfaces match Go structures
+4. **Error Handling**: Go errors wrapped with context, displayed in UI
 
-The tool reads the entire ELF file into memory, parses its structure based on the ELF specification, and provides various display options for different ELF components.
+### Data Flow (Web Version)
 
-## イシュー
+1. User uploads ELF file → `FileUpload` component
+2. File converted to ArrayBuffer → Passed to WASM `parseELF`
+3. Go parses binary data → Returns structured JSON
+4. React components render parsed data with interactive features
 
-イシューの要望は原則/frontでフロントアプリで実装して。
+## Testing
 
-## lint
+**Frontend Tests:**
+- Test framework: Vitest with React Testing Library
+- Test files: `*.test.tsx` (e.g., `SectionHeaders.test.tsx`)
+- Configuration: `vitest.config.ts`
+- Setup file: `src/test/setup.ts`
 
-frontアプリのlintはpackage.jsonに定義されているlintコマンドを利用して
+## CI/CD
+
+**GitHub Actions Workflows:**
+- `test-frontend.yml`: Runs on PRs affecting `front/`
+  - Uses pnpm for dependency management
+  - Runs lint, tests, and build
+
+## Important Notes
+
+- イシューの要望は原則/frontでフロントアプリで実装して
+- frontアプリのlintはpackage.jsonに定義されているlintコマンドを利用して
+- When building WASM, output must go to `front/public/elfviewer.wasm`
+- The frontend expects the WASM file to be available at runtime
