@@ -1,8 +1,4 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-"use strict";
 
 (() => {
 	const enosys = () => {
@@ -15,10 +11,10 @@
 		let outputBuf = "";
 		globalThis.fs = {
 			constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
-			writeSync(fd, buf) {
+			writeSync(_fd, buf) {
 				outputBuf += decoder.decode(buf);
 				const nl = outputBuf.lastIndexOf("\n");
-				if (nl != -1) {
+				if (nl !== -1) {
 					console.log(outputBuf.substring(0, nl));
 					outputBuf = outputBuf.substring(nl + 1);
 				}
@@ -32,29 +28,29 @@
 				const n = this.writeSync(fd, buf);
 				callback(null, n);
 			},
-			chmod(path, mode, callback) { callback(enosys()); },
-			chown(path, uid, gid, callback) { callback(enosys()); },
-			close(fd, callback) { callback(enosys()); },
-			fchmod(fd, mode, callback) { callback(enosys()); },
-			fchown(fd, uid, gid, callback) { callback(enosys()); },
-			fstat(fd, callback) { callback(enosys()); },
-			fsync(fd, callback) { callback(null); },
-			ftruncate(fd, length, callback) { callback(enosys()); },
-			lchown(path, uid, gid, callback) { callback(enosys()); },
-			link(path, link, callback) { callback(enosys()); },
-			lstat(path, callback) { callback(enosys()); },
-			mkdir(path, perm, callback) { callback(enosys()); },
-			open(path, flags, mode, callback) { callback(enosys()); },
-			read(fd, buffer, offset, length, position, callback) { callback(enosys()); },
-			readdir(path, callback) { callback(enosys()); },
-			readlink(path, callback) { callback(enosys()); },
-			rename(from, to, callback) { callback(enosys()); },
-			rmdir(path, callback) { callback(enosys()); },
-			stat(path, callback) { callback(enosys()); },
-			symlink(path, link, callback) { callback(enosys()); },
-			truncate(path, length, callback) { callback(enosys()); },
-			unlink(path, callback) { callback(enosys()); },
-			utimes(path, atime, mtime, callback) { callback(enosys()); },
+			chmod(_path, _mode, callback) { callback(enosys()); },
+			chown(_path, _uid, _gid, callback) { callback(enosys()); },
+			close(_fd, callback) { callback(enosys()); },
+			fchmod(_fd, _mode, callback) { callback(enosys()); },
+			fchown(_fd, _uid, _gid, callback) { callback(enosys()); },
+			fstat(_fd, callback) { callback(enosys()); },
+			fsync(_fd, callback) { callback(null); },
+			ftruncate(_fd, _length, callback) { callback(enosys()); },
+			lchown(_path, _uid, _gid, callback) { callback(enosys()); },
+			link(_path, _link, callback) { callback(enosys()); },
+			lstat(_path, callback) { callback(enosys()); },
+			mkdir(_path, _perm, callback) { callback(enosys()); },
+			open(_path, _flags, _mode, callback) { callback(enosys()); },
+			read(_fd, _buffer, _offset, _length, _position, callback) { callback(enosys()); },
+			readdir(_path, callback) { callback(enosys()); },
+			readlink(_path, callback) { callback(enosys()); },
+			rename(_from, _to, callback) { callback(enosys()); },
+			rmdir(_path, callback) { callback(enosys()); },
+			stat(_path, callback) { callback(enosys()); },
+			symlink(_path, _link, callback) { callback(enosys()); },
+			truncate(_path, _length, callback) { callback(enosys()); },
+			unlink(_path, callback) { callback(enosys()); },
+			utimes(_path, _atime, _mtime, callback) { callback(enosys()); },
 		};
 	}
 
@@ -113,7 +109,7 @@
 				this.mem.setUint32(addr + 4, Math.floor(v / 4294967296), true);
 			}
 
-			const setInt32 = (addr, v) => {
+			const _setInt32 = (addr, v) => {
 				this.mem.setUint32(addr + 0, v, true);
 			}
 
@@ -128,7 +124,7 @@
 				if (f === 0) {
 					return undefined;
 				}
-				if (!isNaN(f)) {
+				if (!Number.isNaN(f)) {
 					return f;
 				}
 
@@ -140,7 +136,7 @@
 				const nanHead = 0x7FF80000;
 
 				if (typeof v === "number" && v !== 0) {
-					if (isNaN(v)) {
+					if (Number.isNaN(v)) {
 						this.mem.setUint32(addr + 4, nanHead, true);
 						this.mem.setUint32(addr, 0, true);
 						return;
@@ -494,7 +490,7 @@
 
 			const strPtr = (str) => {
 				const ptr = offset;
-				const bytes = encoder.encode(str + "\0");
+				const bytes = encoder.encode(`${str}\0`);
 				new Uint8Array(this.mem.buffer, offset, bytes.length).set(bytes);
 				offset += bytes.length;
 				if (offset % 8 !== 0) {

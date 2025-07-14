@@ -1,5 +1,5 @@
-import React from 'react';
-import { SectionHeader, getSectionTypeString, formatFlags } from '../utils/wasm';
+import type React from 'react';
+import { type SectionHeader, getSectionTypeString, formatFlags } from '../utils/wasm';
 
 interface SectionHeadersProps {
   sections: SectionHeader[];
@@ -28,7 +28,7 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
           </thead>
           <tbody>
             {sections.map((section, index) => (
-              <tr key={index}>
+              <tr key={`section-${index}`}>
                 <td>[{index}]</td>
                 <td>{section.Name || '<no-name>'}</td>
                 <td>{getSectionTypeString(section.Type)}</td>

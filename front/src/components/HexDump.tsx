@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { SectionHeader, getHexDump } from '../utils/wasm';
+import type React from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { type SectionHeader, getHexDump } from '../utils/wasm';
 
 interface HexDumpProps {
   buffer: ArrayBuffer;
@@ -53,9 +54,9 @@ export const HexDump: React.FC<HexDumpProps> = ({ buffer, sections }) => {
         <label htmlFor="section-select" style={{ marginRight: '0.5rem' }}>
           Select Section:
         </label>
-        <select 
-          id="section-select" 
-          value={selectedSection} 
+        <select
+          id="section-select"
+          value={selectedSection}
           onChange={handleSectionChange}
           style={{
             padding: '0.5rem',
@@ -66,8 +67,8 @@ export const HexDump: React.FC<HexDumpProps> = ({ buffer, sections }) => {
         >
           {sections
             .filter(s => s.Name && s.Size > 0)
-            .map((section, index) => (
-              <option key={index} value={section.Name}>
+            .map((section, _index) => (
+              <option key={section.Name} value={section.Name}>
                 {section.Name} (0x{section.Size.toString(16)} bytes)
               </option>
             ))}

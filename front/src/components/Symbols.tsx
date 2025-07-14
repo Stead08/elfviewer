@@ -1,8 +1,8 @@
-import React from 'react';
-import { Symbol } from '../utils/wasm';
+import type React from 'react';
+import type { Symbol as ELFSymbol } from '../utils/wasm';
 
 interface SymbolsProps {
-  symbols: Symbol[];
+  symbols: ELFSymbol[];
 }
 
 function getSymbolType(info: number): string {
@@ -78,7 +78,7 @@ export const Symbols: React.FC<SymbolsProps> = ({ symbols }) => {
           </thead>
           <tbody>
             {symbols.map((symbol, index) => (
-              <tr key={index}>
+              <tr key={`symbol-${index}`}>
                 <td>{index}:</td>
                 <td className="mono">0x{symbol.Value.toString(16).padStart(16, '0')}</td>
                 <td>{symbol.Size}</td>

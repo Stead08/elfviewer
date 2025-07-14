@@ -6,7 +6,7 @@ import { SectionHeaders } from './components/SectionHeaders';
 import { ProgramHeaders } from './components/ProgramHeaders';
 import { Symbols } from './components/Symbols';
 import { HexDump } from './components/HexDump';
-import { parseELF, ELFInfo, initWasm } from './utils/wasm';
+import { parseELF, type ELFInfo, initWasm } from './utils/wasm';
 
 function App() {
   const [elfData, setElfData] = useState<ELFInfo | null>(null);
@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     initWasm()
       .then(() => setWasmLoading(false))
-      .catch(err => {
+      .catch(_err => {
         setError('Failed to initialize WebAssembly');
         setWasmLoading(false);
       });
@@ -64,30 +64,35 @@ function App() {
           <div className="elf-content">
             <nav className="tabs">
               <button 
+                type="button"
                 className={activeTab === 'header' ? 'active' : ''} 
                 onClick={() => setActiveTab('header')}
               >
                 Header
               </button>
               <button 
+                type="button"
                 className={activeTab === 'sections' ? 'active' : ''} 
                 onClick={() => setActiveTab('sections')}
               >
                 Sections
               </button>
               <button 
+                type="button"
                 className={activeTab === 'segments' ? 'active' : ''} 
                 onClick={() => setActiveTab('segments')}
               >
                 Segments
               </button>
               <button 
+                type="button"
                 className={activeTab === 'symbols' ? 'active' : ''} 
                 onClick={() => setActiveTab('symbols')}
               >
                 Symbols
               </button>
               <button 
+                type="button"
                 className={activeTab === 'hex' ? 'active' : ''} 
                 onClick={() => setActiveTab('hex')}
               >

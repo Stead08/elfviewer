@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react';
+import type React from 'react';
+import { useCallback } from 'react';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -25,10 +26,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
   }, []);
 
   return (
-    <div 
+    <div
       className="file-upload"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          document.getElementById('file-input')?.click();
+        }
+      }}
     >
       <input
         type="file"

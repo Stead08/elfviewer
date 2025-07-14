@@ -53,7 +53,10 @@ export interface Symbol {
 
 declare global {
   interface Window {
-    Go: any;
+    Go: new () => {
+      run: (instance: WebAssembly.Instance) => void;
+      importObject: WebAssembly.Imports;
+    };
     parseELF: (buffer: ArrayBuffer) => { data?: string; error?: string };
     getHexDump: (buffer: ArrayBuffer, sectionName: string) => { data?: string; error?: string };
   }
@@ -86,7 +89,10 @@ export async function parseELF(buffer: ArrayBuffer): Promise<ELFInfo> {
     throw new Error(result.error);
   }
   
-  return JSON.parse(result.data!);
+  if (!result.data) {
+    throw new Error('No data returned from parseELF');
+  }
+  return JSON.parse(result.data);
 }
 
 export async function getHexDump(buffer: ArrayBuffer, sectionName: string): Promise<string> {
@@ -97,7 +103,10 @@ export async function getHexDump(buffer: ArrayBuffer, sectionName: string): Prom
     throw new Error(result.error);
   }
   
-  return result.data!;
+  if (!result.data) {
+    throw new Error('No data returned from getHexDump');
+  }
+  return result.data;
 }
 
 // Type helpers

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ProgramHeader, getSegmentTypeString, formatSegmentFlags } from '../utils/wasm';
+import type React from 'react';
+import { type ProgramHeader, getSegmentTypeString, formatSegmentFlags } from '../utils/wasm';
 
 interface ProgramHeadersProps {
   segments: ProgramHeader[];
@@ -25,7 +25,7 @@ export const ProgramHeaders: React.FC<ProgramHeadersProps> = ({ segments }) => {
           </thead>
           <tbody>
             {segments.map((segment, index) => (
-              <tr key={index}>
+              <tr key={`segment-${index}`}>
                 <td>{getSegmentTypeString(segment.Type)}</td>
                 <td className="mono">0x{segment.Offset.toString(16).padStart(16, '0')}</td>
                 <td className="mono">0x{segment.VAddr.toString(16).padStart(16, '0')}</td>

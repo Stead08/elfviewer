@@ -1,5 +1,5 @@
-import React from 'react';
-import { ELFInfo, getClassName, getDataEncoding, getTypeString, getMachineString } from '../utils/wasm';
+import type React from 'react';
+import { type ELFInfo, getClassName, getDataEncoding, getTypeString, getMachineString } from '../utils/wasm';
 
 interface ELFHeaderProps {
   data: ELFInfo;
