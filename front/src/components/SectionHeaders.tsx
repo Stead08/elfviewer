@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
 	formatFlags,
 	getSectionTypeString,
@@ -18,12 +18,14 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 		// First map sections to include their original indices
 		let filtered = sections.map((section, originalIndex) => ({
 			...section,
-			originalIndex
+			originalIndex,
 		}));
 
 		// Apply flag filtering
 		if (showFlaggedOnly) {
-			filtered = filtered.filter(section => formatFlags(section.Flags).trim() !== "");
+			filtered = filtered.filter(
+				(section) => formatFlags(section.Flags).trim() !== "",
+			);
 		}
 
 		// Apply address sorting
@@ -39,7 +41,14 @@ export const SectionHeaders: React.FC<SectionHeadersProps> = ({ sections }) => {
 			<h2>Section Headers</h2>
 
 			{/* Controls */}
-			<div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+			<div
+				style={{
+					marginBottom: "1rem",
+					display: "flex",
+					gap: "1rem",
+					flexWrap: "wrap",
+				}}
+			>
 				<label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
 					<input
 						type="checkbox"
