@@ -106,7 +106,7 @@ function App() {
 							{activeTab === "segments" && (
 								<ProgramHeaders segments={elfData.programHeaders} />
 							)}
-							{activeTab === "symbols" && <Symbols symbols={elfData.symbols} />}
+							{activeTab === "symbols" && <Symbols symbols={elfData.symbols} sectionHeaders={elfData.sectionHeaders} />}
 							{activeTab === "hex" && fileBuffer && (
 								<HexDump
 									buffer={fileBuffer}

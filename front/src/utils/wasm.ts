@@ -15,7 +15,7 @@ export interface ELFInfo {
 	entry: number;
 	sectionHeaders: SectionHeader[];
 	programHeaders: ProgramHeader[];
-	symbols: Symbol[];
+	symbols: ELFSymbol[];
 }
 
 export interface SectionHeader {
@@ -42,7 +42,7 @@ export interface ProgramHeader {
 	Align: number;
 }
 
-export interface Symbol {
+export interface ELFSymbol {
 	Name: string;
 	Value: number;
 	Size: number;
