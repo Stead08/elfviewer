@@ -1,128 +1,135 @@
-# ELF Viewer
+# ELF Viewer - Web Application
 
-A command-line tool for displaying and analyzing ELF (Executable and Linkable Format) files on Unix-like systems.
+A modern React-based web application for analyzing ELF (Executable and Linkable Format) files directly in your browser. Upload ELF files and explore their structure through an intuitive web interface powered by WebAssembly.
 
 ## Features
 
-- Display ELF file headers with detailed information
-- View section headers and their properties
-- Examine program headers (segments)
-- List symbol tables (both static and dynamic)
-- Display dynamic section information
-- Hex dump of specific sections
-- Support for both 32-bit and 64-bit ELF files
-- Support for little-endian and big-endian formats
+- **File Upload Interface**: Drag and drop ELF files directly into the browser
+- **Interactive Header Display**: View ELF file headers with detailed information
+- **Section Headers Table**: Sortable and filterable section headers with properties
+- **Program Headers Viewer**: Examine program headers (segments) with visual representation
+- **Symbol Table Explorer**: Browse symbol tables (both static and dynamic) with search functionality
+- **Dynamic Section Information**: Display dynamic section data in structured format
+- **Hex Dump Viewer**: Interactive hex dump with section selection
+- **Cross-Platform**: Runs in any modern web browser, no installation required
+- **Full ELF Support**: Both 32-bit and 64-bit ELF files, little-endian and big-endian formats
 
-## Installation
+## Technology Stack
 
+- **Frontend**: React 19.1.0 with TypeScript
+- **Build Tool**: Vite for fast development and optimized builds
+- **Package Manager**: pnpm for efficient dependency management
+- **Testing**: Vitest with React Testing Library
+- **Linting**: Biome for code quality and formatting
+- **Backend**: Go compiled to WebAssembly for ELF parsing
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (latest LTS version recommended)
+- pnpm package manager
+
+### Installation
+
+1. Clone the repository:
 ```bash
-go get github.com/elfviewer/elfviewer
-```
-
-Or build from source:
-
-```bash
-git clone https://github.com/elfviewer/elfviewer
+git clone https://github.com/Stead08/elfviewer
 cd elfviewer
-go build
 ```
+
+2. Install frontend dependencies:
+```bash
+cd front
+pnpm install
+```
+
+3. Start the development server:
+```bash
+pnpm dev
+```
+
+4. Open your browser and navigate to `http://localhost:5173`
+
+### Building for Production
+
+```bash
+cd front
+pnpm build
+```
+
+The built application will be available in the `dist` directory.
 
 ## Usage
 
-```
-elfviewer [options] <elf-file>
+1. **Upload an ELF File**: Click the upload area or drag and drop an ELF file
+2. **Explore Headers**: View the ELF header information in the first tab
+3. **Browse Sections**: Use the Section Headers tab to examine all sections
+4. **Check Segments**: View program headers in the Program Headers tab
+5. **Analyze Symbols**: Explore symbol tables in the Symbols tab
+6. **Hex Dump**: Select any section for a detailed hex dump view
 
-Options:
-  -h, --header      Show ELF header (default)
-  -S, --sections    Show section headers
-  -l, --segments    Show program headers
-  -s, --symbols     Show symbol table
-  -d, --dynamic     Show dynamic section
-  -a, --all         Show all information
-  -x, --hex <section>  Dump section in hex
-  --help           Show help message
-```
+## Architecture
 
-## Examples
+The application uses a dual-architecture approach:
 
-Display basic ELF header information:
+- **Web Frontend**: React application providing the user interface
+- **WebAssembly Backend**: Go code compiled to WASM for efficient ELF parsing
+- **Shared Types**: TypeScript interfaces that match Go structures for type safety
+
+### Key Components
+
+- `FileUpload.tsx`: Handles ELF file uploads and processing
+- `ELFHeader.tsx`: Displays parsed ELF header information
+- `SectionHeaders.tsx`: Interactive section headers table
+- `ProgramHeaders.tsx`: Program segments visualization
+- `Symbols.tsx`: Symbol table explorer with search
+- `HexDump.tsx`: Hex dump viewer with section selection
+
+## Development
+
+### Running Tests
+
 ```bash
-elfviewer /bin/ls
+cd front
+pnpm test          # Watch mode
+pnpm test -- --run # Run once
+pnpm test:ui       # Run with UI
 ```
 
-Show all information about an ELF file:
+### Linting
+
 ```bash
-elfviewer -a /usr/bin/gcc
+cd front
+pnpm run lint
 ```
 
-Display section headers:
+### WebAssembly Build
+
+The Go backend is compiled to WebAssembly for browser execution:
+
 ```bash
-elfviewer -S /lib/libc.so.6
+GOOS=js GOARCH=wasm go build -o front/public/elfviewer.wasm
 ```
 
-Show program headers (segments):
+## CLI Alternative
+
+While this repository focuses on the web application, a command-line interface is also available:
+
 ```bash
-elfviewer -l /bin/bash
+go build
+./elfviewer [options] <elf-file>
 ```
 
-Display symbol table:
-```bash
-elfviewer -s /usr/lib/libm.so
-```
+See `CLAUDE.md` for detailed CLI usage instructions.
 
-Hex dump of .text section:
-```bash
-elfviewer -x .text /bin/echo
-```
+## Contributing
 
-## Output Format
-
-### ELF Header
-Shows basic file information including:
-- Magic bytes (7f 45 4c 46)
-- Class (32-bit or 64-bit)
-- Data encoding (little-endian or big-endian)
-- File type (executable, shared object, etc.)
-- Target architecture
-- Entry point address
-
-### Section Headers
-Lists all sections with:
-- Section name
-- Type (PROGBITS, SYMTAB, STRTAB, etc.)
-- Virtual address
-- File offset
-- Size
-- Flags (Write, Alloc, Execute)
-
-### Program Headers
-Shows loadable segments with:
-- Segment type (LOAD, DYNAMIC, INTERP, etc.)
-- File offset and size
-- Virtual and physical addresses
-- Memory size
-- Permissions (Read, Write, Execute)
-
-### Symbol Table
-Displays symbols with:
-- Symbol value (address)
-- Size
-- Type (FUNC, OBJECT, etc.)
-- Binding (LOCAL, GLOBAL, WEAK)
-- Section index
-- Symbol name
-
-## Supported Architectures
-
-- x86 (i386)
-- x86-64 (amd64)
-- ARM
-- ARM64 (aarch64)
-- And many others (displays numeric ID for unsupported architectures)
-
-## Requirements
-
-- Go 1.16 or later
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
 
 ## License
 
